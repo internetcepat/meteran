@@ -359,7 +359,7 @@ function filterDataByDate() {
     firebase.auth().signOut()
       .then(() => {
         // Logout berhasil, redirect ke halaman login (atau halaman beranda)
-        window.location.href = 'login.html'; // Ganti dengan halaman yang sesuai
+        window.location.href = 'index.html'; // Ganti dengan halaman yang sesuai
       })
       .catch((error) => {
         // Penanganan error jika ada masalah saat logout
