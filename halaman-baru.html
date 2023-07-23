@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRUD with Firebase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+  /* Gaya CSS Anda disini */
+
+  /* Gaya Umum */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #fff;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-top: 0;
+  }
+
+  /* Efek 3D untuk Formulir */
+  form {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transform: perspective(800px) rotateX(5deg) rotateY(5deg);
+    transition: transform 0.3s ease;
+  }
+
+  form:hover {
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+  }
+
+  button {
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #333;
+  }
+
+  /* Efek 3D untuk Tabel */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transform: perspective(800px) rotateX(3deg) rotateY(3deg);
+    transition: transform 0.3s ease;
+  }
+
+  table:hover {
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  input[type="text"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+
+  button {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  button:active {
+    background-color: #3e8e41;
+  }
+
+  button:focus {
+    outline: none;
+  }
+
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+</style>
+
+<body>
+ <!-- ... (kode HTML sebelumnya) ... -->
+  
+  <h2>Form Data Penggunaan</h2>
+  <div>
+    <label for="tanggal">Tanggal:</label>
+    <input type="date" id="tanggal" value="${getCurrentDate()}" required>
+  
+    <label for="kode">Kode:</label>
+    <input type="number" id="kode" required>
+    <label for="nama">Nama Pel:</label>
+    <input type="text" id="nama" required>
+    <label for="sebelumnya">Sebelumnya:</label>
+    <input type="number" id="sebelumnya" required>
+    <label for="berikutnya">Berikutnya:</label>
+    <input type="number" id="berikutnya" required>
+    <label for="penggunaan">Pemakaian m3:</label>
+    <input type="number" id="penggunaan" disabled>
+    <label for="harga">Harga:</label>
+    <input type="number" id="harga" disabled>
+    <button onclick="simpanData()">Simpan</button>
+  </div>
+  
+  <!-- ... (kode HTML lainnya) ... -->
+  
+  </body>
+  
+  </html>
+
+<!-- ... (kode HTML lainnya) ... -->
+
+<h2>Data Pemakaian</h2>
+<label for="filterTanggal">Filter Tanggal:</label>
+<input type="date" id="filterTanggal" onchange="filterDataByDate()">
+
+<table>
+  <thead>
+  <tr>
+    <th>Tanggal</th>
+    <th>Kode</th>
+    <th>Nama Pel</th>
+    <th>Pemakaian m3</th>
+    <th>Harga</th>
+    <th>Aksi</th>
+  </tr>
+</thead>
+
+  <tbody id="tabelData">
+  </tbody>
+</table>
+
+<!-- Tombol Logout -->
+<button onclick="logout()">Logout</button>
+
+<!-- ... (kode HTML lainnya) ... -->
+
+
+<!-- Firebase SDK - Pastikan Anda sudah menghubungkan Firebase SDK di bawah ini -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+
+
+
+  <script>
+    // Inisialisasi Firebase App (Sesuaikan konfigurasi firebase Anda di sini)
+    var firebaseConfig = {
+     apiKey: "AIzaSyBxZuE2wWcS0_ZHlh1zLHza1duuCXvk8mA",
+        authDomain: "meteran-368e1.firebaseapp.com",
+        databaseURL: "https://meteran-368e1-default-rtdb.firebaseio.com",
+        projectId: "meteran-368e1",
+        storageBucket: "meteran-368e1.appspot.com",
+        messagingSenderId: "771224172024",
+        appId: "1:771224172024:web:4584477e48e6b47b60120d",
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Referensi ke Firebase Realtime Database
+    const database = firebase.database();
+    
+    function getCurrentDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+
+// Fungsi untuk mengisi otomatis nilai "Pemakaian m3" berdasarkan hasil pengurangan "Berikutnya" - "Sebelumnya" dan menghitung "Harga" berdasarkan pemakaian dikali 3000
+function isiPemakaianM3() {
+  const sebelumnya = parseInt(document.getElementById('sebelumnya').value) || 0;
+  const berikutnya = parseInt(document.getElementById('berikutnya').value) || 0;
+  const pemakaian = berikutnya - sebelumnya;
+  const harga = pemakaian * 3000;
+  document.getElementById('penggunaan').value = pemakaian;
+  document.getElementById('harga').value = harga;
+}
+
+
+// Panggil fungsi isiPemakaianM3() saat ada perubahan nilai di input "Sebelumnya" atau "Berikutnya"
+document.getElementById('sebelumnya').addEventListener('change', isiPemakaianM3);
+document.getElementById('berikutnya').addEventListener('change', isiPemakaianM3);
+// Fungsi untuk menyimpan data ke Firebase
+function simpanData() {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    const userId = user.uid;
+    const tanggal = document.getElementById('tanggal').value;
+    const kode = document.getElementById('kode').value;
+    const nama = document.getElementById('nama').value;
+    const penggunaan = document.getElementById('penggunaan').value;
+    const harga = document.getElementById('harga').value;
+
+    database.ref('users/' + userId + '/barang').push({
+      tanggal: tanggal,
+      kode: kode,
+      nama: nama,
+      penggunaan: penggunaan,
+      harga: harga
+    });
+
+    // Setelah disimpan, kosongkan input
+    document.getElementById('tanggal').value = '';
+    document.getElementById('kode').value = '';
+    document.getElementById('nama').value = '';
+    document.getElementById('sebelumnya').value = ''; // Kosongkan input "Sebelumnya"
+    document.getElementById('berikutnya').value = ''; // Kosongkan input "Berikutnya"
+    document.getElementById('penggunaan').value = '';
+    document.getElementById('harga').value = '';
+
+    // Tampilkan ulang data setelah data disimpan
+    tampilkanData();
+  }
+}
+
+
+    
+
+    // Fungsi untuk mengambil data dari Firebase dan menampilkan ke dalam tabel
+    function tampilkanData() {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    const userId = user.uid;
+    const filterDate = document.getElementById('filterTanggal').value;
+    const tabelData = document.getElementById('tabelData');
+
+    // Kosongkan tabel sebelum menampilkan data
+    tabelData.innerHTML = '';
+
+    let databaseRef = database.ref('users/' + userId + '/barang');
+
+    // Jika ada tanggal yang dipilih, tambahkan filter berdasarkan tanggal
+    if (filterDate) {
+      databaseRef = databaseRef.orderByChild('tanggal').equalTo(filterDate);
+    }
+
+    databaseRef.once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        const childKey = childSnapshot.key;
+        const childData = childSnapshot.val();
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${childData.tanggal}</td>
+          <td>${childData.kode}</td>
+          <td>${childData.nama}</td>
+          <td>${childData.penggunaan}</td>
+          <td>${childData.harga}</td>
+          <td><button onclick="hapusData('${childKey}')">Hapus</button></td>
+        `;
+
+        tabelData.appendChild(row);
+      });
+    });
+  }
+}
+
+    // Panggil fungsi tampilkanData() agar data ditampilkan saat halaman dimuat
+    tampilkanData();
+
+    // Fungsi untuk menghapus data dari Firebase berdasarkan kunci (key)
+    function hapusData(key) {
+      if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+        database.ref('barang/' + key).remove();
+        tampilkanData(); // Tampilkan ulang data setelah data dihapus
+      }
+    }
+
+
+
+function filterDataByDate() {
+  const filterDate = document.getElementById('filterTanggal').value;
+  const user = firebase.auth().currentUser;
+  if (user) {
+    const userId = user.uid;
+    const tabelData = document.getElementById('tabelData');
+
+    // Kosongkan tabel sebelum menampilkan data
+    tabelData.innerHTML = '';
+
+    database.ref('users/' + userId + '/barang').orderByChild('tanggal').equalTo(filterDate).once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        const childKey = childSnapshot.key;
+        const childData = childSnapshot.val();
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${childData.tanggal}</td>
+          <td>${childData.kode}</td>
+          <td>${childData.nama}</td>
+          <td>${childData.penggunaan}</td>
+          <td>${childData.harga}</td>
+          <td><button onclick="hapusData('${childKey}')">Hapus</button></td>
+        `;
+
+        tabelData.appendChild(row);
+      });
+    });
+  }
+}
+
+
+  // Fungsi untuk logout
+  function logout() {
+    firebase.auth().signOut()
+      .then(() => {
+        // Logout berhasil, redirect ke halaman login (atau halaman beranda)
+        window.location.href = 'login.html'; // Ganti dengan halaman yang sesuai
+      })
+      .catch((error) => {
+        // Penanganan error jika ada masalah saat logout
+        console.error('Error saat logout:', error);
+      });
+  }
+  
+
+  </script>
+</body>
+</html>
