@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tambahkan library Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script> 
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+
+
+  <script>
+    // Konfigurasi Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyBxZuE2wWcS0_ZHlh1zLHza1duuCXvk8mA",
+      authDomain: "meteran-368e1.firebaseapp.com",
+      databaseURL: "https://meteran-368e1-default-rtdb.firebaseio.com",
+      projectId: "meteran-368e1",
+      storageBucket: "meteran-368e1.appspot.com",
+      messagingSenderId: "771224172024",
+      appId: "1:771224172024:web:4584477e48e6b47b60120d",
+    };
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Function untuk login
+    function login() {
+      var email = document.getElementById("login-email").value;
+      var password = document.getElementById("login-password").value;
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(function() {
+          // Redirect ke halaman baru setelah berhasil login
+          window.location.href = "halaman-baru.html";
+        })
+        .catch(function(error) {
+          var errorMessage = error.message;
+          console.log(errorMessage);
+          // Tampilkan pesan error ke pengguna jika login gagal
+          alert("Error: " + errorMessage);
+        });
+    }
+
+    // Function untuk login dengan akun Google
+    function loginWithGoogle() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithRedirect(provider);
+    }
+
+    // Function untuk mendapatkan URL redirect setelah login dengan akun Google
+    function getRedirectResult() {
+      firebase.auth().getRedirectResult()
+        .then(function(result) {
+          if (result.user) {
+            // Redirect ke halaman baru setelah berhasil login
+            window.location.href = "halaman-baru.html";
+          }
+        })
+        .catch(function(error) {
+          var errorMessage = error.message;
+          console.log(errorMessage);
+          // Tampilkan pesan error ke pengguna jika login gagal
+          alert("Error: " + errorMessage);
+        });
+    }
+
+
+
+
+    // Panggil fungsi getRedirectResult() saat halaman dimuat
+    window.onload = function() {
+      getRedirectResult();
+    };
+  </script>
+
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f2f2f2;
+}
+
+.container {
+  width: 300px;
+  text-align: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+}
+form button {
+  margin-bottom: 10px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+label {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="button"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #32cd32;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+a {
+  color: #2154f4;
+  text-decoration: none;
+}
+
+.google-login {
+  margin-top: 20px;
+}
+
+.google-login button {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.google-login img {
+  vertical-align: middle;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+</style>
+
+<body>
+  <div class="container">
+    <h1>Login</h1>
+    <form>
+      <label for="login-email">Email:</label>
+      <input type="email" id="login-email" required><br>
+
+
+      <label for="login-password">Password:</label>
+      <input type="password" id="login-password" required><br>
+
+     <button type="button" onclick="login()">Login</button>
+<button type="button" onclick="location.href='sandi.html'">Lupa Paswoord</button>
+
+    </form>
+
+    <p>Belum punya akun? <a href="register.html">Daftar!</a></p>
+
+    <div class="google-login">
+      <div class="google-login">
+  <button onclick="loginWithGoogle()">
+    <img width="48" height="48" src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google"/>
+    Masuk dengan Akun Google
+  </button>
+</div>
+
+      <button onclick="location.href='loginhp.html'">
+       <img width="48" height="48" src="https://img.icons8.com/color/48/smartphone.png" alt="smartphone"/>
+        Masuk dengan Nomor HP
+      </button>
+      
+    </div>
+  </div>
+</body>
+</html>

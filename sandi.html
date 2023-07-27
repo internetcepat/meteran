@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sandi</title>
+      <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script> 
+      <script src = "https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js" > </script> 
+        <script src = "https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js" > </script>
+    
+        
+        <script >
+        // Konfigurasi Firebase
+        var firebaseConfig = {
+          apiKey: "AIzaSyBxZuE2wWcS0_ZHlh1zLHza1duuCXvk8mA",
+          authDomain: "meteran-368e1.firebaseapp.com",
+          databaseURL: "https://meteran-368e1-default-rtdb.firebaseio.com",
+          projectId: "meteran-368e1",
+          storageBucket: "meteran-368e1.appspot.com",
+          messagingSenderId: "771224172024",
+          appId: "1:771224172024:web:4584477e48e6b47b60120d",
+        };
+      // Inisialisasi Firebase
+      firebase.initializeApp(firebaseConfig);
+      
+  // ... (existing code)
+
+  // Function untuk mereset password
+  function forgotPassword() {
+    var email = document.getElementById("login-email").value;
+
+    // Lakukan pengecekan format email menggunakan regex
+    var emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.match(emailFormat)) {
+      alert("Format email tidak valid. Mohon periksa kembali.");
+      return;
+    }
+
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(function() {
+        alert("Email untuk mereset password telah dikirim. Silakan periksa kotak masuk Anda.");
+        window.location.href = "index.html"; // Ganti 'login.html' dengan nama file halaman login Anda
+      })
+      .catch(function(error) {
+        var errorMessage = error.message;
+        console.log(errorMessage);
+        alert("Error: " + errorMessage);
+      });
+  }
+</script>
+
+  <style>
+  
+  body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f2f2f2;
+  }
+  
+  .container {
+  width: 300px;
+  text-align: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+  color: #333;
+  }
+  form button {
+  margin-bottom: 10px;
+  }
+  
+  form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  }
+  
+  label {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 5px;
+  }
+  
+  input[type="email"],
+  input[type="password"],
+  input[type="button"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  }
+  
+  button {
+  width: 100%;
+  padding: 10px;
+  background-color: #32cd32;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  }
+  
+  a {
+  color: #2154f4;
+  text-decoration: none;
+  }
+  
+  .google-login {
+  margin-top: 20px;
+  }
+  
+  .google-login button {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  }
+  
+  .google-login img {
+  vertical-align: middle;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  }
+  
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Masukan Email</h1>
+    <form>
+      <label for="login-email">Email:</label>
+      <input type="email" id="login-email" required><br>
+<button type="button" onclick="forgotPassword()">Lupa Password</button>
+    </form>
+</div>
+</body>
+
+</html>

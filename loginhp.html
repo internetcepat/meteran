@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Halaman Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tambahkan library Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script> 
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+
+  <script>
+    // Konfigurasi Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyBxZuE2wWcS0_ZHlh1zLHza1duuCXvk8mA",
+        authDomain: "meteran-368e1.firebaseapp.com",
+        databaseURL: "https://meteran-368e1-default-rtdb.firebaseio.com",
+        projectId: "meteran-368e1",
+        storageBucket: "meteran-368e1.appspot.com",
+        messagingSenderId: "771224172024",
+        appId: "1:771224172024:web:4584477e48e6b47b60120d",
+    };
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'invisible',
+      'callback': function(response) {
+        // Callback jika ReCAPTCHA berhasil diverifikasi
+        // Tidak perlu melakukan apa-apa di sini
+      }
+    });
+
+    // Function untuk login dengan nomor HP
+    function loginDenganNomorHP() {
+      var nomorHP = document.getElementById("login-nomor-hp").value;
+      var nomorHPDenganKodeNegara = "+62" + nomorHP; // Kode negara Indonesia adalah +62
+
+      firebase.auth().signInWithPhoneNumber(nomorHPDenganKodeNegara, new firebase.auth.RecaptchaVerifier('recaptcha-container'))
+        .then(function (confirmationResult) {
+          // Simpan hasil konfirmasi dalam variabel global untuk digunakan nanti
+          window.confirmationResult = confirmationResult;
+          alert("OTP telah dikirim ke nomor HP Anda, silakan masukkan OTP untuk melanjutkan.");
+          // Sembunyikan kotak centang ReCAPTCHA setelah berhasil mengirimkan OTP
+          document.getElementById("recaptcha-container").style.display = "none";
+          })
+          
+          
+        
+        .catch(function (error) {
+          var errorMessage = error.message;
+          console.log(errorMessage);
+          // Tampilkan pesan error kepada pengguna jika login gagal
+          alert("Error: " + errorMessage);
+        });
+    }
+
+    // Function untuk verifikasi OTP
+    function verifikasiOTP() {
+      var otp = document.getElementById("otp").value;
+
+      window.confirmationResult.confirm(otp)
+        .then(function (result) {
+          // Redirect ke halaman baru setelah berhasil login
+          window.location.href = "halaman-baru.html";
+        })
+        .catch(function (error) {
+          var errorMessage = error.message;
+          console.log(errorMessage);
+          // Tampilkan pesan error kepada pengguna jika login gagal
+          alert("Error: " + errorMessage);
+        });
+    }
+  </script>
+
+  <style>
+    /* ... Gaya CSS Anda yang sudah ada ... */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f2f2f2;
+    }
+    
+    .container {
+      width: 300px;
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    form button {
+      margin-bottom: 10px;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    label {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 5px;
+    }
+    
+    input[type="email"],
+    input[type="password"],
+    input[type="button"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #32cd32;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    a {
+      color: #2154f4;
+      text-decoration: none;
+    }
+    
+    .google-login {
+      margin-top: 20px;
+    }
+    
+    .google-login button {
+      background-color: #fff;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+    
+    .google-login img {
+      vertical-align: middle;
+      margin-right: 10px;
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <h1>Login</h1>
+    <form>
+      <!-- Ganti input email dan password dengan input nomor HP -->
+      <label for="login-nomor-hp">Nomor HP:</label>
+      <input type="number" id="login-nomor-hp" required><br>
+       <div id="recaptcha-container"></div>
+      <!-- Tambahkan field untuk OTP -->
+      <label for="otp">OTP:</label>
+      <input type="number" id="otp" required><br>
+
+      <!-- Ganti tombol login dengan tombol OTP dan login -->
+      <button type="button" onclick="loginDenganNomorHP()">Dapatkan OTP</button>
+      <button type="button" onclick="verifikasiOTP()">Verifikasi OTP</button>
+     
+
+
+      <!-- Tetapkan tautan untuk me-reset password dan mendaftar akun seperti yang Anda miliki -->
+
+    </form>
+
+    <!-- ... Elemen yang sudah ada sebelumnya ... -->
+</body>
+</html>
